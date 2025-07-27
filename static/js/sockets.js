@@ -195,6 +195,25 @@ window.socket.on('reload_config', () => {
     window.location.reload();
 });
 
+window.socket.on('font_config_update', (data) => {
+    console.log('Received font config update:', data.config);
+    
+    // Update Clock config if available
+    if (window.Clock && window.Clock.updateConfig) {
+        window.Clock.updateConfig(data.config);
+    }
+    
+    // Update FontManager UI if available
+    if (window.FontManager && window.FontManager.updateUIFromConfig) {
+        window.FontManager.updateUIFromConfig(data.config);
+    }
+    
+    // Load Google Font if needed
+    if (data.config.fontUrl && window.FontManager && window.FontManager.loadGoogleFont) {
+        window.FontManager.loadGoogleFont(data.config.fontUrl);
+    }
+});
+
 // UI update functions
 function updateUI(state) {
     // Don't update status through this function since StateManager handles it
