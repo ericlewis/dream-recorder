@@ -17,6 +17,7 @@
     
     <!-- General CSS -->
     <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/animations.css">
     <link rel="stylesheet" href="/static/css/icon-animations.css">
     <link rel="stylesheet" href="/static/css/clock.css">
 
@@ -52,7 +53,10 @@
         <div id="loading" class="loading"></div>
 
         <div id="videoContainer">
-            <video id="generatedVideo" muted autoplay loop>
+            <video id="generatedVideo" class="video-player video-player-active" muted autoplay loop>
+                Your browser does not support the video tag.
+            </video>
+            <video id="generatedVideo2" class="video-player" muted autoplay loop>
                 Your browser does not support the video tag.
             </video>
         </div>

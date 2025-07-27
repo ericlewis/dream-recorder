@@ -108,6 +108,19 @@ def handle_connect(auth=None):
     if logger:
         logger.info('Client connected')
     emit('state_update', recording_state)
+    
+    # Send all available video URLs for preloading
+    try:
+        dreams = dream_db.get_all_dreams()
+        if dreams:
+            video_urls = [f"/media/video/{dream['video_filename']}" for dream in dreams if dream and 'video_filename' in dream]
+            if video_urls:
+                emit('preload_videos', {'urls': video_urls})
+                if logger:
+                    logger.info(f'Sent {len(video_urls)} videos for preloading')
+    except Exception as e:
+        if logger:
+            logger.error(f"Error sending videos for preload: {str(e)}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -187,9 +200,15 @@ def handle_show_previous_dream():
             video_playback_state['is_playing'] = True
         # Get the dream at the current index
         dream = dreams[video_playback_state['current_index']]
-        # Emit the video URL to the client
+        
+        # Get the next dream for preloading
+        next_index = (video_playback_state['current_index'] + 1) % len(dreams)
+        next_dream = dreams[next_index]
+        
+        # Emit the video URL to the client with preload hint
         socketio.emit('play_video', {
             'video_url': f"/media/video/{dream['video_filename']}",
+            'next_video_url': f"/media/video/{next_dream['video_filename']}",
             'loop': True  # Enable looping for the video
         })
         if logger:
